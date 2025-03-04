@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, Blueprint
 import os
 
-app = Flask(__name__)
+lts = Blueprint('lts', __name__,
+                        template_folder='templates', static_folder='static')
 
 # Paths for ASL and ISL image folders 
-ASL_PATH = "static\ASL"
-ISL_PATH = "static\ISL"
+ASL_PATH = "static/ASL"
+ISL_PATH = "static/ISL"
 
 # Function to translate text into sign language images
 def get_sign_language_images(text, language):
@@ -15,7 +16,7 @@ def get_sign_language_images(text, language):
         if letter.isalpha() or letter.isdigit():
             image_filename = f"{letter}.jpg"
             image_path = os.path.join(folder_path, image_filename)
-            
+            print(image_path)
             if os.path.exists(image_path):
                 image_url = url_for('static', filename=f"{language.upper()}/{image_filename}")
                 images.append(image_url)
@@ -23,11 +24,11 @@ def get_sign_language_images(text, language):
                 images.append(url_for('static', filename="placeholder.jpg"))  
     return images
 
-@app.route('/')
+@lts.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/translate', methods=['POST'])
+@lts.route('/translate', methods=['POST'])
 def translate():
     # Get input values from the user
     text_input = request.form.get("text_input")
