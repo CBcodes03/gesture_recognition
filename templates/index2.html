@@ -4,7 +4,197 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Gesture Recognition</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #FFFDE7;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 2px solid #FFD700;
+            margin-bottom: 20px;
+            background-color: #FFFDE7;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            margin-left: 20px;
+            height: 50px;
+        }
+        
+        .main-heading {
+            color: #F57F17;
+            font-size: 1.8rem;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .video-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .controls-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        h2 {
+            color: #F9A825;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        h3 {
+            color: #F57F17;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+        
+        #output {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        button {
+            background-color: #FFC107;
+            color: #333;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: #FFB300;
+        }
+        
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .icon-button {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        #prediction-box {
+            height: auto;
+            width: auto;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 60px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-y: auto;
+        }
+        
+        .prediction-btn {
+            background-color: #FFD600;
+            color: #333;
+            padding: 5px 10px;
+            margin: 3px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .prediction-btn:hover {
+            background-color: #FFC400;
+        }
+        
+        #sentence {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 100px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            background-color: white;
+        }
+        
+        .info {
+            background-color: #FFF9C4;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-style: italic;
+            color: #F57F17;
+        }
+        
+        .bottom-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -14,40 +204,59 @@
         </header>
 
         <main class="content">
-            <h2>Gesture Recognition Stream</h2>
-            <video id="video" autoplay playsinline style="display:none;"></video>
-            <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
-            <img id="output" style="width:640px;height:480px;" />
-
-            <div class="info">
-                <p>AI Based Gesture Recognition Tool</p>
+            <!-- Left side: Video section -->
+            <div class="video-section">
+                <h2>Gesture Recognition Stream</h2>
+                <video id="video" autoplay playsinline style="display:none;"></video>
+                <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+                <img id="output" alt="Gesture Recognition Output" />
+                
+                <div class="button-group">
+                    <button id="start-btn" onclick="startCapture()">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                    <button id="stop-btn" onclick="stopCapture()">
+                        <i class="fas fa-stop"></i> Stop
+                    </button>
+                    <button class="icon-button" onclick="resetWord()" title="Reset Word">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+                
+                <div class="info">
+                    <p><i class="fas fa-info-circle"></i> AI Based Gesture Recognition Tool</p>
+                </div>
             </div>
-
-            <!-- Start & Stop Buttons -->
-            <button onclick="startCapture()" style="margin-left: auto; margin-right: auto;">Start Gesture Recognition</button>
-            <button onclick="stopCapture()" style="margin-left: auto; margin-right: auto;">Stop Gesture Recognition</button>
-            <button onclick="reset()" style="margin-left: auto; margin-right: auto;">Reset Word</button>
-
-            <!-- Display Prediction -->
-            <h3 style="margin-left: auto; margin-right: auto;">predicted words here</h3>
-            <div id="prediction-box" style="margin-top: 20px; padding: 10px; border: 1px solid black; width: 300px; min-height: 50px; margin-left: auto; margin-right: auto;">
+            
+            <!-- Right side: Controls section -->
+            <div class="controls-section">
+                <h3><i class="fas fa-hand-point-up"></i> Predicted Words</h3>
+                <div id="prediction-box"></div>
+                
+                <h3><i class="fas fa-comment"></i> Generated Sentence</h3>
+                <div id="sentence"></div>
+                
+                <div class="bottom-controls">
+                    <button id="predict-btn" onclick="generateSentence()">
+                        <i class="fas fa-magic"></i> Generate Sentence
+                    </button>
+                    
+                    <select id="languageSelect">
+                        <option value="hi">Hindi</option>
+                        <option value="mr">Marathi</option>
+                        <option value="pa">Punjabi</option>
+                        <option value="te">Telugu</option>
+                        <option value="ta">Tamil</option>
+                        <option value="kn">Kannada</option>
+                        <option value="ml">Malayalam</option>
+                        <option value="gu">Gujarati</option>
+                        <option value="bn">Bengali</option>
+                    </select>
+                    <button class="icon-button" onclick="resetsentence()" style="margin-left: auto; margin-right: auto;" title="Reset Sentence">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
             </div>
-            <h3 style="margin-left: auto; margin-right: auto;">sentence here</h3>
-            <div id="sentence" style="margin-left: auto; margin-right: auto; border: 1px solid black; width: 500px; min-height: 100px;"></div>
-            <!-- Predict Button -->
-            <button id="predict-btn" onclick="generateSentence()" style="margin-left: auto; margin-right: auto; position: float;">Predict</button>
-            <select id="languageSelect" style="position: float;">
-                <option value="hi">Hindi</option>
-                <option value="mr">Marathi</option>
-                <option value="pa">Punjabi</option>
-                <option value="te">Telugu</option>
-                <option value="ta">Tamil</option>
-                <option value="kn">Kannada</option>
-                <option value="ml">Malayalam</option>
-                <option value="gu">Gujarati</option>
-                <option value="bn">Bengali</option>
-            </select>
-            <button if="sreset" onclick="resetsentence()" style="margin-left: auto; margin-right: auto;">reset sentence</button>
         </main>
     </div>
     <script>
