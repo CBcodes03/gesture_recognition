@@ -9,7 +9,7 @@ import google.generativeai as genai
 from googletrans import Translator
 from gtts import gTTS
 import uuid
-genai.configure(api_key="AIzaSyBTUPE4zSz2cyrp2llJcZgz6Duv_c76aRw")
+genai.configure(api_key="api_key_here")
 # Paths for ASL and ISL image folders
 ASL_PATH = "static/ASL"
 ISL_PATH = "static/ISL"
