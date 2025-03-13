@@ -6,3 +6,5 @@ mediapipe
 numpy
 google-generativeai
 nltk
+googletrans
+gtts
